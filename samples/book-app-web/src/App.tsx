@@ -39,54 +39,65 @@ export function filterBooks(bookList: Book[], filters: BookFiltersState) {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [filters, setFilters] = useState<BookFiltersState>(defaultFilters);
   const genres = useMemo(() => [...new Set(books.map((book) => book.genre))].sort(), []);
   const filteredBooks = useMemo(() => filterBooks(books, filters), [filters]);
 
   return (
-    <main className="app-shell">
-      <section className="hero">
-        <p className="eyebrow">GitHub Copilot app sample</p>
-        <h1>Book Collection</h1>
-        <p>
-          Explore a small reading list used throughout the course to practice issues, pull
-          requests, review comments, tests, and browser validation.
-        </p>
-      </section>
+    <div className="theme-page" data-theme={theme}>
+      <main className="app-shell">
+        <section className="hero">
+          <button
+            className="theme-toggle"
+            type="button"
+            aria-pressed={theme === "dark"}
+            onClick={() => setTheme((current) => (current === "light" ? "dark" : "light"))}
+          >
+            Dark mode
+          </button>
+          <p className="eyebrow">GitHub Copilot app sample</p>
+          <h1>Book Collection</h1>
+          <p>
+            Explore a small reading list used throughout the course to practice issues, pull
+            requests, review comments, tests, and browser validation.
+          </p>
+        </section>
 
-      <ReadingStats books={filteredBooks} />
+        <ReadingStats books={filteredBooks} />
 
-      <BookFilters
-        genres={genres}
-        searchTerm={filters.searchTerm}
-        selectedGenre={filters.selectedGenre}
-        readingStatus={filters.readingStatus}
-        onSearchTermChange={(searchTerm) => setFilters((current) => ({ ...current, searchTerm }))}
-        onGenreChange={(selectedGenre) => setFilters((current) => ({ ...current, selectedGenre }))}
-        onReadingStatusChange={(readingStatus) =>
-          setFilters((current) => ({ ...current, readingStatus }))
-        }
-      />
+        <BookFilters
+          genres={genres}
+          searchTerm={filters.searchTerm}
+          selectedGenre={filters.selectedGenre}
+          readingStatus={filters.readingStatus}
+          onSearchTermChange={(searchTerm) => setFilters((current) => ({ ...current, searchTerm }))}
+          onGenreChange={(selectedGenre) => setFilters((current) => ({ ...current, selectedGenre }))}
+          onReadingStatusChange={(readingStatus) =>
+            setFilters((current) => ({ ...current, readingStatus }))
+          }
+        />
 
-      <section className="book-results" aria-live="polite">
-        <div className="results-heading">
-          <h2>{filteredBooks.length} books shown</h2>
-          <p>Stats update as filters change so learners can validate behavior quickly.</p>
-        </div>
-
-        {filteredBooks.length > 0 ? (
-          <div className="book-grid">
-            {filteredBooks.map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))}
+        <section className="book-results" aria-live="polite">
+          <div className="results-heading">
+            <h2>{filteredBooks.length} books shown</h2>
+            <p>Stats update as filters change so learners can validate behavior quickly.</p>
           </div>
-        ) : (
-          <div className="empty-state" role="status">
-            <h2>No matching books found</h2>
-            <p>Try a different search term, genre, or reading status.</p>
-          </div>
-        )}
-      </section>
-    </main>
+
+          {filteredBooks.length > 0 ? (
+            <div className="book-grid">
+              {filteredBooks.map((book) => (
+                <BookCard key={book.id} book={book} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state" role="status">
+              <h2>No matching books found</h2>
+              <p>Try a different search term, genre, or reading status.</p>
+            </div>
+          )}
+        </section>
+      </main>
+    </div>
   );
 }
